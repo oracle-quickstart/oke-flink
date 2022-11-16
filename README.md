@@ -19,13 +19,15 @@ The OKE cluster template features the following:
 
 ## Getting started with Apache Flink Operator
 
-Get more details with the official [Apache Flink operator documentation](https://nightlies.apache.org/flink/flink-kubernetes-operator-docs-main/docs/try-flink-kubernetes-operator/quick-start/)
+The Operator is deployed in the cluster, and offers two modes of operation:
 
-Once the Operator is deployed in the cluster, there are tow possible modes of operation:
+### Application Mode
 
-- Application Mode: in this mode flink job are deployed independently, creating a Job Manager and Task Manager(s) for each Job. It is the preferred way of using the operator if the Job code is packaged in a Docker image. In this mode, since a Job Manager is deployed per job, the UI access is also per job and one needs to connect to the specfic Job Manager REST service.
+In this mode flink job are deployed independently, creating a Job Manager and Task Manager(s) for each Job. It is the preferred way of using the operator if the Job code is packaged in a Docker image. In this mode, since a Job Manager is deployed per job, the UI access is also per job and one needs to connect to the specfic Job Manager REST service.
 
-- Session Mode: in session mode, a FlinkDeployment creates a JobManager (or more if High Availability is configured), and then FlinkSessionJob can be created that uses that Job Manager. The advantage is that the UI is accessible in one place, however Job code needs to be staged on a remote location (like an Object Storage bucket). On OCI, the code can be stored on storage bucket and made accessible through a Pre-authenticated Request, or S3 compatibility file system needs to have been configured as a plugin to reference the jar (the difference between the two is in the way to control access)
+### Session Mode
+
+In session mode, a FlinkDeployment creates a JobManager (or more if High Availability is configured), and then FlinkSessionJob can be created that uses that Job Manager. The advantage is that the UI is accessible in one place, however Job code needs to be staged on a remote location (like an Object Storage bucket). On OCI, the code can be stored on storage bucket and made accessible through a Pre-authenticated Request, or S3 compatibility file system needs to have been configured as a plugin to reference the jar (the difference between the two is in the way to control access)
 
 The demo job referenced in the docs uses Application Mode.
 
@@ -127,6 +129,27 @@ spec:
     args: []
     upgradeMode: stateless # Use savepoint if state management is configuered. `last-state` is not supported.
 ```
+
+## Use the Terraform template
+
+To use the Terraform template locally, configure the OCI Command Line Interface with a Private/Public key pair added to your user.
+
+Create a `terraform.tvfars` from the `terraform.tvfars.template` file and fill in the values for the variables.
+
+Run:
+
+```bash
+# init the repo
+terraform init
+# check the plan
+terraform plan
+# deploy
+terraform apply
+```
+
+## References
+
+- [Apache Flink operator documentation](https://nightlies.apache.org/flink/flink-kubernetes-operator-docs-main/docs/try-flink-kubernetes-operator/quick-start/)
 
 
 [magic_button]: https://oci-resourcemanager-plugin.plugins.oci.oraclecloud.com/latest/deploy-to-oracle-cloud.svg

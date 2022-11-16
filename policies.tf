@@ -1,3 +1,6 @@
+## Copyright © 2022, Oracle and/or its affiliates. 
+## All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
+
 # Cluster dynamic group policy needed for nodes to access the encryption key if it was defined
 resource "oci_identity_policy" "oke_key_access_policy" {
   count = (var.enable_secret_encryption && var.secrets_key_id != null) || (var.enable_image_validation && var.image_validation_key_id != null) ? 1 : 0

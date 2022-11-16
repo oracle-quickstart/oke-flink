@@ -1,3 +1,6 @@
+## Copyright © 2022, Oracle and/or its affiliates. 
+## All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
+
 # Check if there is an OKE image for the image selected
 data "oci_core_image" "np1_image" {
   count    = var.node_pool_count >= 1 ? 1 : 0

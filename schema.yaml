@@ -1,10 +1,19 @@
 ## Copyright © 2022, Oracle and/or its affiliates. 
 ## All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
 
-title: Title
-description: Title
+title: Apache Flink on OKE (using Flink Operator)
+description: |
+  Deploy an Oracle Kubernetes Engine cluster with Apache Flink via the Flink Operator. 
+stackDescription: |
+  Apache Flink on a multi-node-pool OKE cluster.
+informationalText: |
+  To get started, run the Cluster Access Command locally or in Cloud Shell, to access the OKE cluster. 
+  Run a demo job by running the flink_demo_job command.
+  Forward the UI service port locally to get access to the UI.
+  Once the port is forwarded, click the Flink UI link to access the UI.
 schemaVersion: 1.1.0
 
+locale: "en"
 variableGroups:
   - title: Cluster Networking
     variables:
@@ -30,9 +39,12 @@ variableGroups:
       - cluster_options_add_ons_is_kubernetes_dashboard_enabled
       - cluster_options_add_ons_is_tiller_enabled
       - node_pool_count
-      - ssh_public_key
       - add_cluster_tag
       - cluster_tags
+
+  - title: Node SSH Access
+    variables:
+      - ssh_public_key
 
   - title: Node Pool 1
     visible:
@@ -240,7 +252,7 @@ variables:
     type: string
     title: Cluster Name
     visible: true
-    default: "OKE Cluster"
+    default: "Flink Cluster"
 
   cluster_compartment_id:
     type: oci:identity:compartment:id
@@ -1012,12 +1024,30 @@ variables:
     title: Enable Metrics Server
     description: |
       Metrics server is used to report metrics, and is used by pod auto-scalers and cluster auto-scaler.
-    visible:
-      not:
-        or: 
-          - np1_enable_autoscaler
-          - np2_enable_autoscaler 
-          - np3_enable_autoscaler
+    visible: false
+      # not:
+      #   or: 
+      #     - and:
+      #       - ge:
+      #         - node_pool_count
+      #         - 1
+      #       - eq:
+      #         - np1_enable_autoscaler
+      #         - true
+      #     - and:
+      #       - ge:
+      #         - node_pool_count
+      #         - 2
+      #       - eq:
+      #         - np2_enable_autoscaler 
+      #         - true
+      #     - and:
+      #       - ge:
+      #         - node_pool_count
+      #         - 3
+      #       - eq:       
+      #         - np3_enable_autoscaler
+      #         - true
 
   enable_cert_manager:
     type: boolean
@@ -1033,6 +1063,39 @@ variables:
   enable_flink:
     type: boolean
     default: true
-    title: Enable Flink
+    title: Deploy Apache Flink
     description: |
-      Metrics server is used to report metrics, and is used by pod auto-scalers and cluster auto-scaler.
+      Apache Flink will be installed using the Flink Operator.
+
+outputGroups:
+  - title: Access Command
+    outputs: 
+      - access_command
+      - flink_demo_job
+      - flink_ui_port_forward
+      - flink_ui_access
+
+outputs:
+  access_command:
+    type: copyableString
+    title: Access Command
+    displayText: Run this command to access your cluster locally.
+    visible: true
+
+  flink_demo_job:
+    type: copyableString
+    title: Flink Demo Job
+    displayText: Run a demo job with the following command
+    visible: true
+
+  flink_ui_port_forward:
+    type: copyableString
+    title: Flink UI Access Port
+    displayText: Run the following command to forward the port to the Flink UI locally and access the UI
+    visible: true
+
+  flink_ui_access:
+    type: link
+    title: Flink UI
+    displayText: "Access the Flink UI"
+    visible: true

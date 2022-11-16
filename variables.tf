@@ -34,7 +34,7 @@ variable "kubernetes_endpoint_subnet" {
 variable "cluster_compartment_id" {}
 
 variable "cluster_name" {
-  default = "OKE Cluster"
+  default = "Flink Cluster"
 }
 
 variable "kubernetes_version" {

@@ -59,3 +59,15 @@
 output "access_command" {
   value = "oci ce cluster create-kubeconfig --cluster-id ${oci_containerengine_cluster.oci_oke_cluster.id} --file $HOME/.kube/config --region ${var.region} --token-version 2.0.0  --kube-endpoint ${var.is_endpoint_public ? "PUBLIC_ENDPOINT" : "PRIVATE_ENDPOINT"}"
 }
+
+output "flink_demo_job" {
+  value = "kubectl create -f https://raw.githubusercontent.com/apache/flink-kubernetes-operator/release-1.2/examples/basic.yaml"
+}
+
+output "flink_ui_port_forward" {
+  value = "kubectl port-forward svc/basic-example-rest 8081"
+}
+
+output "flink_ui_access" {
+  value = "http://localhost:8081"
+}

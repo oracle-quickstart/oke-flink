@@ -43,7 +43,7 @@ metadata:
   name: flink-session
 spec:
   image: <flink base image, or your own image with the proper plugins enables, like flink-s3-fs-hadoop>
-  flinkVersion: v1_14
+  flinkVersion: v1_16
   flinkConfiguration:
     taskmanager.numberOfTaskSlots: "2"
     ## S3 compatible mode Object Storage access

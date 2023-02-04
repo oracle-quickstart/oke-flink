@@ -4,7 +4,7 @@
 resource "helm_release" "flink_operator" {
   count            = var.enable_flink ? 1 : 0
   name             = "flink-operator"
-  repository       = "https://downloads.apache.org/flink/flink-kubernetes-operator-1.2.0/"
+  repository       = "https://downloads.apache.org/flink/flink-kubernetes-operator-1.3.1/"
   chart            = "flink-kubernetes-operator"
   namespace        = "flink"
   create_namespace = true

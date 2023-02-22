@@ -1,9 +1,9 @@
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates. All rights reserved.
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 # 
 
 locals {
-  cluster_autoscaler_supported_k8s_versions           = { "1.21" = "1.21.1-3", "1.22" = "1.22.2-4", "1.23" = "1.23.0-4", "1.24" = "1.24.0-5" } # There's no API to get that list. Need to be updated manually
+  cluster_autoscaler_supported_k8s_versions           = { "1.21" = "1.21.1-3", "1.22" = "1.22.2-4", "1.23" = "1.23.0-4", "1.24" = "1.24.0-5", "1.25" = "1.25.0-6" } # There's no API to get that list. Need to be updated manually
   cluster_autoscaler_image_version                    = lookup(local.cluster_autoscaler_supported_k8s_versions, local.k8s_major_minor_version, reverse(values(local.cluster_autoscaler_supported_k8s_versions))[0])
   cluster_autoscaler_image                            = "iad.ocir.io/oracle/oci-cluster-autoscaler:${local.cluster_autoscaler_image_version}"
   cluster_autoscaler_log_level_verbosity              = 4
@@ -72,7 +72,7 @@ resource "kubernetes_cluster_role" "cluster_autoscaler_cr" {
   }
   rule {
     api_groups = [""]
-    resources  = ["pods", "services", "replicationcontrollers", "persistentvolumeclaims", "persistentvolumes"]
+    resources  = ["pods", "services", "replicationcontrollers", "persistentvolumeclaims", "persistentvolumes", "namespaces"]
     verbs      = ["watch", "list", "get"]
   }
   rule {
@@ -92,7 +92,7 @@ resource "kubernetes_cluster_role" "cluster_autoscaler_cr" {
   }
   rule {
     api_groups = ["storage.k8s.io"]
-    resources  = ["storageclasses", "csinodes", "csistoragecapacities"]
+    resources  = ["storageclasses", "csinodes", "csistoragecapacities", "csidrivers"]
     verbs      = ["watch", "list", "get"]
   }
   rule {
@@ -263,6 +263,10 @@ resource "kubernetes_deployment" "cluster_autoscaler_deployment" {
             name  = "OKE_USE_INSTANCE_PRINCIPAL"
             value = "true"
           }
+          env {
+            name  = "OCI_SDK_APPEND_USER_AGENT"
+            value = "oci-oke-cluster-autoscaler"
+          }
         }
       }
     }
@@ -274,11 +278,24 @@ resource "kubernetes_deployment" "cluster_autoscaler_deployment" {
   ]
 }
 
-# output "k8_version" {
-#     value = {
-#         k8s_version = local.kubernetes_version
-#         k8s_maj_min_version = local.k8s_major_minor_version
-#         k8s_minor_version = local.k8s_minor_version  
-#         cluster_autoscaler_cloud_provider = local.cluster_autoscaler_cloud_provider    
-#     }
-# }
+resource "kubernetes_pod_disruption_budget_v1" "core_dns_pod_disruption_budget" {
+  count = local.cluster_autoscaler_enabled ? 1 : 0
+
+  metadata {
+    name      = "coredns-pdb"
+    namespace = "kube-system"
+    labels = {
+      k8s-app   = "cluster-autoscaler"
+    }
+  }
+  spec {
+    max_unavailable = "1"
+    selector {
+      match_labels = {
+        k8s-app= "kube-dns"
+      }
+    }
+  }
+
+  depends_on = [oci_containerengine_node_pool.oci_oke_node_pool]
+}

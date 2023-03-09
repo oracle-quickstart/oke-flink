@@ -58,7 +58,7 @@ resource "oci_containerengine_node_pool" "oci_oke_node_pool" {
   cluster_id         = oci_containerengine_cluster.oci_oke_cluster.id
   compartment_id     = var.cluster_compartment_id
   kubernetes_version = var.kubernetes_version != "" ? var.kubernetes_version : reverse(data.oci_containerengine_cluster_option.cluster_options.kubernetes_versions)[0]
-  name               = "${local.node_pools[count.index]["node_shape"]} Node Pool"
+  name               = "${local.node_pools[count.index]["node_shape"]}_Node_Pool"
   node_shape         = local.node_pools[count.index]["node_shape"]
 
   #   initial_node_labels {

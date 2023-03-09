@@ -4,8 +4,7 @@
 locals {
   subnet_cidrs            = cidrsubnets(var.vcn_cidr, 12, 8, 4, 4, 4) # API + 1 LB + 3 node pools
   api_subnet_cidr         = element(local.subnet_cidrs, 0)
-  public_lb_subnet_cidr   = element(local.subnet_cidrs, 1)
-  lb_subnets_cidrs        = element(local.subnet_cidrs, 2) # [for k, v in zipmap(slice(local.subnet_cidrs, 1, 3), [var.allow_deploy_public_lb, var.allow_deploy_private_lb]) : k if v]
+  lb_subnet_cidr          = element(local.subnet_cidrs, 1)
   node_pool_subnets_cidrs = slice(local.subnet_cidrs, 2, 5)
   ADs                     = data.oci_identity_availability_domains.ADs.availability_domains.*.name
 }
@@ -337,7 +336,7 @@ resource "oci_core_security_list" "oke_nodepool_lb_comm_sec_list" {
     description      = "TCP to LBs"
     protocol         = "6"
     destination_type = "CIDR_BLOCK"
-    destination      = local.lb_subnets_cidrs
+    destination      = local.lb_subnet_cidr
     stateless        = false
     # }
   }
@@ -348,7 +347,7 @@ resource "oci_core_security_list" "oke_nodepool_lb_comm_sec_list" {
     # content {
     description = "TCP from LBs"
     protocol    = "6"
-    source      = local.lb_subnets_cidrs
+    source      = local.lb_subnet_cidr
     stateless   = false
     # }
   }
@@ -371,18 +370,18 @@ resource "oci_core_subnet" "oke_api_endpoint_subnet" {
   defined_tags               = var.vcn_tags
 }
 
-resource "oci_core_subnet" "oke_public_lb_subnet" {
-  count               = (var.use_existing_vcn && !var.allow_deploy_public_lb) ? 0 : 1
-  cidr_block          = local.public_lb_subnet_cidr
+resource "oci_core_subnet" "oke_lb_subnet" {
+  count               = (var.use_existing_vcn) ? 0 : 1
+  cidr_block          = local.lb_subnet_cidr
   compartment_id      = var.vcn_compartment_id
   availability_domain = null
   vcn_id              = oci_core_vcn.oke_vcn[0].id
   dns_label           = "lb"
-  display_name        = "Services Public LBs Subnet"
+  display_name        = "Services LBs Subnet"
 
   security_list_ids          = [oci_core_vcn.oke_vcn[0].default_security_list_id]
   route_table_id             = oci_core_route_table.oke_rt_via_igw[0].id
-  prohibit_public_ip_on_vnic = false
+  prohibit_public_ip_on_vnic = !var.allow_deploy_public_lb
   defined_tags               = var.vcn_tags
 }
 

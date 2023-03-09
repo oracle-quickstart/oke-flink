@@ -33,7 +33,7 @@ resource "oci_containerengine_cluster" "oci_oke_cluster" {
 
   options {
     # service_lb_subnet_ids = var.use_existing_vcn ? [for k, v in zipmap([var.public_lb_subnet, var.private_lb_subnet], [var.allow_deploy_public_lb, var.allow_deploy_private_lb]) : k if v] : [for k, v in zipmap([oci_core_subnet.oke_public_lb_subnet[0].id, oci_core_subnet.oke_private_lb_subnet[0].id], [var.allow_deploy_public_lb, var.allow_deploy_private_lb]) : k if v]
-    service_lb_subnet_ids = var.allow_deploy_public_lb ? (var.use_existing_vcn ? [var.public_lb_subnet] : [oci_core_subnet.oke_public_lb_subnet[0].id]) : []
+    service_lb_subnet_ids = var.use_existing_vcn ? [var.public_lb_subnet] : [oci_core_subnet.oke_lb_subnet[0].id]
 
     add_ons {
       is_kubernetes_dashboard_enabled = var.cluster_options_add_ons_is_kubernetes_dashboard_enabled

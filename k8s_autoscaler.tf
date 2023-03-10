@@ -321,9 +321,9 @@ resource "local_file" "cluster_autoscaler_yaml" {
   content = templatefile("cluster_autoscaler.yaml", {
     image = local.cluster_autoscaler_image
     node_pools_settings = join("\n", compact([
-      "- --nodes=${var.np1_autoscaler_min_nodes}:${var.np1_autoscaler_max_nodes}:${var.np2_autoscaler_max_nodes}:${oci_containerengine_node_pool.oci_oke_node_pool[0].id}",
+      "- --nodes=${var.np1_autoscaler_min_nodes}:${var.np1_autoscaler_max_nodes}:${oci_containerengine_node_pool.oci_oke_node_pool[0].id}",
       var.node_pool_count >= 2 ? "            - --nodes=${var.np2_autoscaler_min_nodes}:${var.np2_autoscaler_max_nodes}:${oci_containerengine_node_pool.oci_oke_node_pool[1].id}" : "",
-      var.node_pool_count >= 3 ? "            - --nodes=${var.np3_autoscaler_min_nodes}:${var.np3_autoscaler_max_nodes}:${var.np2_autoscaler_max_nodes}:${oci_containerengine_node_pool.oci_oke_node_pool[2].id}" : "",
+      var.node_pool_count >= 3 ? "            - --nodes=${var.np3_autoscaler_min_nodes}:${var.np3_autoscaler_max_nodes}:${oci_containerengine_node_pool.oci_oke_node_pool[2].id}" : "",
     ]))
   })
   filename = "cluster_autoscaler_rendered.yaml"

@@ -17,284 +17,373 @@ locals {
   k8s_minor_version                                   = regex("^\\d+", replace(local.kubernetes_version, "v1.", ""))
 }
 
-resource "kubernetes_service_account" "cluster_autoscaler_sa" {
+# resource "kubernetes_service_account" "cluster_autoscaler_sa" {
+#   count = local.cluster_autoscaler_enabled ? 1 : 0
+
+#   metadata {
+#     name      = "cluster-autoscaler"
+#     namespace = "kube-system"
+#     labels = {
+#       k8s-addon = "cluster-autoscaler.addons.k8s.io"
+#       k8s-app   = "cluster-autoscaler"
+#     }
+#   }
+#   automount_service_account_token = false
+
+#   depends_on = [oci_containerengine_node_pool.oci_oke_node_pool]
+# }
+
+# resource "kubernetes_secret" "cluster_autoscaler_sa_token" {
+#   count = local.cluster_autoscaler_enabled ? 1 : 0
+
+#   metadata {
+#     name      = "cluster-autoscaler-token"
+#     namespace = "kube-system"
+#     annotations = {
+#       "kubernetes.io/service-account.name" = "cluster-autoscaler"
+#     }
+#   }
+#   type = "kubernetes.io/service-account-token"
+
+#   depends_on = [kubernetes_service_account.cluster_autoscaler_sa, oci_containerengine_node_pool.oci_oke_node_pool]
+# }
+
+# resource "kubernetes_cluster_role" "cluster_autoscaler_cr" {
+#   count = local.cluster_autoscaler_enabled ? 1 : 0
+
+#   metadata {
+#     name = "cluster-autoscaler"
+#     labels = {
+#       k8s-addon = "cluster-autoscaler.addons.k8s.io"
+#       k8s-app   = "cluster-autoscaler"
+#     }
+#   }
+
+#   rule {
+#     api_groups = [""]
+#     resources  = ["events", "endpoints"]
+#     verbs      = ["create", "patch"]
+#   }
+#   rule {
+#     api_groups = [""]
+#     resources  = ["pods/eviction"]
+#     verbs      = ["create"]
+#   }
+#   rule {
+#     api_groups = [""]
+#     resources  = ["pods/status"]
+#     verbs      = ["update"]
+#   }
+#   rule {
+#     api_groups     = [""]
+#     resource_names = ["cluster-autoscaler"]
+#     resources      = ["endpoints"]
+#     verbs          = ["get", "update"]
+#   }
+#   rule {
+#     api_groups = [""]
+#     resources  = ["nodes"]
+#     verbs      = ["watch", "list", "get", "patch", "update"]
+#   }
+#   rule {
+#     api_groups = [""]
+#     resources  = ["pods", "services", "replicationcontrollers", "persistentvolumeclaims", "persistentvolumes", "namespaces"]
+#     verbs      = ["watch", "list", "get"]
+#   }
+#   rule {
+#     api_groups = ["extensions"]
+#     resources  = ["replicasets", "daemonsets"]
+#     verbs      = ["watch", "list", "get"]
+#   }
+#   rule {
+#     api_groups = ["policy"]
+#     resources  = ["poddisruptionbudgets"]
+#     verbs      = ["watch", "list"]
+#   }
+#   rule {
+#     api_groups = ["apps"]
+#     resources  = ["statefulsets", "replicasets", "daemonsets"]
+#     verbs      = ["watch", "list", "get"]
+#   }
+#   rule {
+#     api_groups = ["storage.k8s.io"]
+#     resources  = ["storageclasses", "csinodes", "csistoragecapacities", "csidrivers"]
+#     verbs      = ["watch", "list", "get"]
+#   }
+#   rule {
+#     api_groups = ["batch", "extensions"]
+#     resources  = ["jobs"]
+#     verbs      = ["get", "list", "watch", "patch"]
+#   }
+#   rule {
+#     api_groups = ["coordination.k8s.io"]
+#     resources  = ["leases"]
+#     verbs      = ["create"]
+#   }
+#   rule {
+#     api_groups     = ["coordination.k8s.io"]
+#     resource_names = ["cluster-autoscaler"]
+#     resources      = ["leases"]
+#     verbs          = ["get", "update"]
+#   }
+
+#   depends_on = [oci_containerengine_node_pool.oci_oke_node_pool]
+# }
+
+# resource "kubernetes_role" "cluster_autoscaler_role" {
+#   count = local.cluster_autoscaler_enabled ? 1 : 0
+
+#   metadata {
+#     name      = "cluster-autoscaler"
+#     namespace = "kube-system"
+#     labels = {
+#       k8s-addon = "cluster-autoscaler.addons.k8s.io"
+#       k8s-app   = "cluster-autoscaler"
+#     }
+#   }
+
+#   rule {
+#     api_groups = [""]
+#     resources  = ["configmaps"]
+#     verbs      = ["create", "list", "watch"]
+#   }
+#   rule {
+#     api_groups     = [""]
+#     resource_names = ["cluster-autoscaler-status", "cluster-autoscaler-priority-expander"]
+#     resources      = ["configmaps"]
+#     verbs          = ["delete", "get", "update", "watch"]
+#   }
+
+#   depends_on = [oci_containerengine_node_pool.oci_oke_node_pool]
+# }
+
+# resource "kubernetes_cluster_role_binding" "cluster_autoscaler_crb" {
+#   count = local.cluster_autoscaler_enabled ? 1 : 0
+#   metadata {
+#     name = "cluster-autoscaler"
+#     labels = {
+#       k8s-addon = "cluster-autoscaler.addons.k8s.io"
+#       k8s-app   = "cluster-autoscaler"
+#     }
+#   }
+
+#   role_ref {
+#     api_group = "rbac.authorization.k8s.io"
+#     kind      = "ClusterRole"
+#     name      = "cluster-autoscaler"
+#   }
+#   subject {
+#     kind      = "ServiceAccount"
+#     name      = "cluster-autoscaler"
+#     namespace = "kube-system"
+#   }
+
+#   depends_on = [oci_containerengine_node_pool.oci_oke_node_pool]
+# }
+
+# resource "kubernetes_role_binding" "cluster_autoscaler_rb" {
+#   count = local.cluster_autoscaler_enabled ? 1 : 0
+
+#   metadata {
+#     name      = "cluster-autoscaler"
+#     namespace = "kube-system"
+#     labels = {
+#       k8s-addon = "cluster-autoscaler.addons.k8s.io"
+#       k8s-app   = "cluster-autoscaler"
+#     }
+#   }
+
+#   role_ref {
+#     api_group = "rbac.authorization.k8s.io"
+#     kind      = "Role"
+#     name      = "cluster-autoscaler"
+#   }
+#   subject {
+#     kind      = "ServiceAccount"
+#     name      = "cluster-autoscaler"
+#     namespace = "kube-system"
+#   }
+
+#   depends_on = [oci_containerengine_node_pool.oci_oke_node_pool]
+# }
+
+# resource "kubernetes_deployment" "cluster_autoscaler_deployment" {
+#   count = local.cluster_autoscaler_enabled ? 1 : 0
+
+#   metadata {
+#     name      = "cluster-autoscaler"
+#     namespace = "kube-system"
+#     labels = {
+#       app = "cluster-autoscaler"
+#     }
+#   }
+
+#   spec {
+#     replicas = 3
+
+#     selector {
+#       match_labels = {
+#         app = "cluster-autoscaler"
+#       }
+#     }
+
+#     template {
+#       metadata {
+#         labels = {
+#           app = "cluster-autoscaler"
+#         }
+#         annotations = {
+#           "prometheus.io/scrape" = true
+#           "prometheus.io/port"   = 8085
+#         }
+#       }
+
+#       spec {
+#         service_account_name = "cluster-autoscaler"
+
+#         container {
+#           image = local.cluster_autoscaler_image
+#           name  = "cluster-autoscaler"
+
+#           resources {
+#             limits = {
+#               cpu    = "100m"
+#               memory = "300Mi"
+#             }
+#             requests = {
+#               cpu    = "100m"
+#               memory = "300Mi"
+#             }
+#           }
+#           command = compact([
+#             "./cluster-autoscaler",
+#             "--v=${local.cluster_autoscaler_log_level_verbosity}",
+#             "--stderrthreshold=info",
+#             "--cloud-provider=${local.cluster_autoscaler_cloud_provider}",
+#             "--max-node-provision-time=${local.cluster_autoscaler_max_node_provision_time}",
+#             "--nodes=${var.np1_autoscaler_min_nodes}:${var.np1_autoscaler_max_nodes}:${oci_containerengine_node_pool.oci_oke_node_pool[0].id}",
+#             var.node_pool_count >= 2 ? "--nodes=${var.np2_autoscaler_min_nodes}:${var.np2_autoscaler_max_nodes}:${oci_containerengine_node_pool.oci_oke_node_pool[1].id}" : "",
+#             var.node_pool_count >= 3 ? "--nodes=${var.np3_autoscaler_min_nodes}:${var.np3_autoscaler_max_nodes}:${oci_containerengine_node_pool.oci_oke_node_pool[2].id}" : "",
+#             "--scale-down-delay-after-add=${local.cluster_autoscaler_scale_down_delay_after_add}",
+#             "--scale-down-unneeded-time=${local.cluster_autoscaler_scale_down_unneeded_time}",
+#             "--unremovable-node-recheck-timeout=${local.cluster_autoscaler_unremovable_node_recheck_timeout}",
+#             "--balance-similar-node-groups",
+#             "--balancing-ignore-label=displayName",
+#             "--balancing-ignore-label=hostname",
+#             "--balancing-ignore-label=internal_addr",
+#             "--balancing-ignore-label=oci.oraclecloud.com/fault-domain"
+#           ])
+#           image_pull_policy = "Always"
+#           env {
+#             name  = "OKE_USE_INSTANCE_PRINCIPAL"
+#             value = "true"
+#           }
+#           env {
+#             name  = "OCI_SDK_APPEND_USER_AGENT"
+#             value = "oci-oke-cluster-autoscaler"
+#           }
+#         }
+#       }
+#     }
+#   }
+
+#   depends_on = [
+#     oci_containerengine_node_pool.oci_oke_node_pool,
+#     helm_release.metrics_server
+#   ]
+# }
+
+# resource "kubernetes_pod_disruption_budget_v1" "core_dns_pod_disruption_budget" {
+#   count = local.cluster_autoscaler_enabled ? 1 : 0
+
+#   metadata {
+#     name      = "coredns-pdb"
+#     namespace = "kube-system"
+#     labels = {
+#       k8s-app   = "cluster-autoscaler"
+#     }
+#   }
+#   spec {
+#     max_unavailable = "1"
+#     selector {
+#       match_labels = {
+#         k8s-app= "kube-dns"
+#       }
+#     }
+#   }
+
+#   depends_on = [oci_containerengine_node_pool.oci_oke_node_pool]
+# }
+
+resource "local_file" "cluster_autoscaler_yaml" {
   count = local.cluster_autoscaler_enabled ? 1 : 0
 
-  metadata {
-    name      = "cluster-autoscaler"
-    namespace = "kube-system"
-    labels = {
-      k8s-addon = "cluster-autoscaler.addons.k8s.io"
-      k8s-app   = "cluster-autoscaler"
-    }
-  }
-  automount_service_account_token = true # workaround to support ORM deprecated terraform providers
-
-  depends_on = [oci_containerengine_node_pool.oci_oke_node_pool]
+  content = templatefile("cluster_autoscaler.yaml", {
+    image = local.cluster_autoscaler_image
+    node_pools_settings = join("\n", compact([
+      "- --nodes=${var.np1_autoscaler_min_nodes}:${var.np1_autoscaler_max_nodes}:${var.np2_autoscaler_max_nodes}:${oci_containerengine_node_pool.oci_oke_node_pool[0].id}",
+      var.node_pool_count >= 2 ? "            - --nodes=${var.np2_autoscaler_min_nodes}:${var.np2_autoscaler_max_nodes}:${oci_containerengine_node_pool.oci_oke_node_pool[1].id}" : "",
+      var.node_pool_count >= 3 ? "            - --nodes=${var.np3_autoscaler_min_nodes}:${var.np3_autoscaler_max_nodes}:${var.np2_autoscaler_max_nodes}:${oci_containerengine_node_pool.oci_oke_node_pool[2].id}" : "",
+    ]))
+  })
+  filename = "cluster_autoscaler_rendered.yaml"
 }
 
-resource "kubernetes_cluster_role" "cluster_autoscaler_cr" {
+resource "null_resource" "cluster_autoscaler" {
   count = local.cluster_autoscaler_enabled ? 1 : 0
 
-  metadata {
-    name = "cluster-autoscaler"
-    labels = {
-      k8s-addon = "cluster-autoscaler.addons.k8s.io"
-      k8s-app   = "cluster-autoscaler"
+  provisioner "local-exec" {
+    command = "mkdir -p ~/.kube/ && oci ce cluster create-kubeconfig --cluster-id $CLUSTER_ID --file ~/.kube/config --region us-sanjose-1 --token-version 2.0.0  --kube-endpoint $ENDPOINT_TYPE"
+
+    environment = {
+      CLUSTER_ID    = oci_containerengine_cluster.oci_oke_cluster.id
+      ENDPOINT_TYPE = var.is_endpoint_public ? "PUBLIC_ENDPOINT" : "PRIVATE_ENDPOINT"
     }
   }
 
-  rule {
-    api_groups = [""]
-    resources  = ["events", "endpoints"]
-    verbs      = ["create", "patch"]
-  }
-  rule {
-    api_groups = [""]
-    resources  = ["pods/eviction"]
-    verbs      = ["create"]
-  }
-  rule {
-    api_groups = [""]
-    resources  = ["pods/status"]
-    verbs      = ["update"]
-  }
-  rule {
-    api_groups     = [""]
-    resource_names = ["cluster-autoscaler"]
-    resources      = ["endpoints"]
-    verbs          = ["get", "update"]
-  }
-  rule {
-    api_groups = [""]
-    resources  = ["nodes"]
-    verbs      = ["watch", "list", "get", "patch", "update"]
-  }
-  rule {
-    api_groups = [""]
-    resources  = ["pods", "services", "replicationcontrollers", "persistentvolumeclaims", "persistentvolumes", "namespaces"]
-    verbs      = ["watch", "list", "get"]
-  }
-  rule {
-    api_groups = ["extensions"]
-    resources  = ["replicasets", "daemonsets"]
-    verbs      = ["watch", "list", "get"]
-  }
-  rule {
-    api_groups = ["policy"]
-    resources  = ["poddisruptionbudgets"]
-    verbs      = ["watch", "list"]
-  }
-  rule {
-    api_groups = ["apps"]
-    resources  = ["statefulsets", "replicasets", "daemonsets"]
-    verbs      = ["watch", "list", "get"]
-  }
-  rule {
-    api_groups = ["storage.k8s.io"]
-    resources  = ["storageclasses", "csinodes", "csistoragecapacities", "csidrivers"]
-    verbs      = ["watch", "list", "get"]
-  }
-  rule {
-    api_groups = ["batch", "extensions"]
-    resources  = ["jobs"]
-    verbs      = ["get", "list", "watch", "patch"]
-  }
-  rule {
-    api_groups = ["coordination.k8s.io"]
-    resources  = ["leases"]
-    verbs      = ["create"]
-  }
-  rule {
-    api_groups     = ["coordination.k8s.io"]
-    resource_names = ["cluster-autoscaler"]
-    resources      = ["leases"]
-    verbs          = ["get", "update"]
+  provisioner "local-exec" {
+    command = "kubectl apply -f cluster_autoscaler_rendered.yaml"
   }
 
-  depends_on = [oci_containerengine_node_pool.oci_oke_node_pool]
-}
-
-resource "kubernetes_role" "cluster_autoscaler_role" {
-  count = local.cluster_autoscaler_enabled ? 1 : 0
-
-  metadata {
-    name      = "cluster-autoscaler"
-    namespace = "kube-system"
-    labels = {
-      k8s-addon = "cluster-autoscaler.addons.k8s.io"
-      k8s-app   = "cluster-autoscaler"
-    }
-  }
-
-  rule {
-    api_groups = [""]
-    resources  = ["configmaps"]
-    verbs      = ["create", "list", "watch"]
-  }
-  rule {
-    api_groups     = [""]
-    resource_names = ["cluster-autoscaler-status", "cluster-autoscaler-priority-expander"]
-    resources      = ["configmaps"]
-    verbs          = ["delete", "get", "update", "watch"]
-  }
-
-  depends_on = [oci_containerengine_node_pool.oci_oke_node_pool]
-}
-
-resource "kubernetes_cluster_role_binding" "cluster_autoscaler_crb" {
-  count = local.cluster_autoscaler_enabled ? 1 : 0
-  metadata {
-    name = "cluster-autoscaler"
-    labels = {
-      k8s-addon = "cluster-autoscaler.addons.k8s.io"
-      k8s-app   = "cluster-autoscaler"
-    }
-  }
-
-  role_ref {
-    api_group = "rbac.authorization.k8s.io"
-    kind      = "ClusterRole"
-    name      = "cluster-autoscaler"
-  }
-  subject {
-    kind      = "ServiceAccount"
-    name      = "cluster-autoscaler"
-    namespace = "kube-system"
-  }
-
-  depends_on = [oci_containerengine_node_pool.oci_oke_node_pool]
-}
-
-resource "kubernetes_role_binding" "cluster_autoscaler_rb" {
-  count = local.cluster_autoscaler_enabled ? 1 : 0
-
-  metadata {
-    name      = "cluster-autoscaler"
-    namespace = "kube-system"
-    labels = {
-      k8s-addon = "cluster-autoscaler.addons.k8s.io"
-      k8s-app   = "cluster-autoscaler"
-    }
-  }
-
-  role_ref {
-    api_group = "rbac.authorization.k8s.io"
-    kind      = "Role"
-    name      = "cluster-autoscaler"
-  }
-  subject {
-    kind      = "ServiceAccount"
-    name      = "cluster-autoscaler"
-    namespace = "kube-system"
-  }
-
-  depends_on = [oci_containerengine_node_pool.oci_oke_node_pool]
-}
-
-resource "kubernetes_deployment" "cluster_autoscaler_deployment" {
-  count = local.cluster_autoscaler_enabled ? 1 : 0
-
-  metadata {
-    name      = "cluster-autoscaler"
-    namespace = "kube-system"
-    labels = {
-      app = "cluster-autoscaler"
-    }
-  }
-
-  spec {
-    replicas = 3
-
-    selector {
-      match_labels = {
-        app = "cluster-autoscaler"
-      }
-    }
-
-    template {
-      metadata {
-        labels = {
-          app = "cluster-autoscaler"
-        }
-        annotations = {
-          "prometheus.io/scrape" = true
-          "prometheus.io/port"   = 8085
-        }
-      }
-
-      spec {
-        service_account_name = "cluster-autoscaler"
-
-        container {
-          image = local.cluster_autoscaler_image
-          name  = "cluster-autoscaler"
-
-          resources {
-            limits = {
-              cpu    = "100m"
-              memory = "300Mi"
-            }
-            requests = {
-              cpu    = "100m"
-              memory = "300Mi"
-            }
-          }
-          command = compact([
-            "./cluster-autoscaler",
-            "--v=${local.cluster_autoscaler_log_level_verbosity}",
-            "--stderrthreshold=info",
-            "--cloud-provider=${local.cluster_autoscaler_cloud_provider}",
-            "--max-node-provision-time=${local.cluster_autoscaler_max_node_provision_time}",
-            "--nodes=${var.np1_autoscaler_min_nodes}:${var.np1_autoscaler_max_nodes}:${oci_containerengine_node_pool.oci_oke_node_pool[0].id}",
-            var.node_pool_count >= 2 ? "--nodes=${var.np2_autoscaler_min_nodes}:${var.np2_autoscaler_max_nodes}:${oci_containerengine_node_pool.oci_oke_node_pool[1].id}" : "",
-            var.node_pool_count >= 3 ? "--nodes=${var.np3_autoscaler_min_nodes}:${var.np3_autoscaler_max_nodes}:${oci_containerengine_node_pool.oci_oke_node_pool[1].id}" : "",
-            "--scale-down-delay-after-add=${local.cluster_autoscaler_scale_down_delay_after_add}",
-            "--scale-down-unneeded-time=${local.cluster_autoscaler_scale_down_unneeded_time}",
-            "--unremovable-node-recheck-timeout=${local.cluster_autoscaler_unremovable_node_recheck_timeout}",
-            "--balance-similar-node-groups",
-            "--balancing-ignore-label=displayName",
-            "--balancing-ignore-label=hostname",
-            "--balancing-ignore-label=internal_addr",
-            "--balancing-ignore-label=oci.oraclecloud.com/fault-domain"
-          ])
-          image_pull_policy = "Always"
-          env {
-            name  = "OKE_USE_INSTANCE_PRINCIPAL"
-            value = "true"
-          }
-          env {
-            name  = "OCI_SDK_APPEND_USER_AGENT"
-            value = "oci-oke-cluster-autoscaler"
-          }
-        }
-      }
-    }
+  provisioner "local-exec" {
+    when       = destroy
+    command    = "cp ./config ~/.kube/ && kubectl delete -f cluster_autoscaler_rendered.yaml"
+    on_failure = continue
   }
 
   depends_on = [
     oci_containerengine_node_pool.oci_oke_node_pool,
-    helm_release.metrics_server
+    local_file.cluster_autoscaler_yaml
   ]
 }
 
-resource "kubernetes_pod_disruption_budget_v1" "core_dns_pod_disruption_budget" {
-  count = local.cluster_autoscaler_enabled ? 1 : 0
+resource "null_resource" "cluster_autoscaler_sa_token" {
 
-  metadata {
-    name      = "coredns-pdb"
-    namespace = "kube-system"
-    labels = {
-      k8s-app   = "cluster-autoscaler"
+  count = local.cluster_autoscaler_enabled && parseint(local.k8s_minor_version, 10) > 24 ? 1 : 0
+
+  provisioner "local-exec" {
+    command = "mkdir -p ~/.kube/ && oci ce cluster create-kubeconfig --cluster-id $CLUSTER_ID --file ~/.kube/config --region us-sanjose-1 --token-version 2.0.0  --kube-endpoint $ENDPOINT_TYPE"
+
+    environment = {
+      CLUSTER_ID    = oci_containerengine_cluster.oci_oke_cluster.id
+      ENDPOINT_TYPE = var.is_endpoint_public ? "PUBLIC_ENDPOINT" : "PRIVATE_ENDPOINT"
     }
   }
-  spec {
-    max_unavailable = "1"
-    selector {
-      match_labels = {
-        k8s-app= "kube-dns"
-      }
-    }
+
+  provisioner "local-exec" {
+    command = "kubectl apply -f sa-token.yaml"
+  }
+
+  provisioner "local-exec" {
+    when       = destroy
+    command    = "ls -lah ~/.kube/"
+    on_failure = continue
+  }
+
+  provisioner "local-exec" {
+    when       = destroy
+    command    = "kubectl delete -f sa-token.yaml"
+    on_failure = continue
   }
 
   depends_on = [oci_containerengine_node_pool.oci_oke_node_pool]

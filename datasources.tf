@@ -43,36 +43,6 @@ data "oci_identity_availability_domains" "ADs" {
   compartment_id = var.tenancy_ocid
 }
 
-# data "oci_containerengine_cluster_kube_config" "KubeConfig" {
-#   cluster_id    = oci_containerengine_cluster.oci_oke_cluster.id
-#   token_version = var.cluster_kube_config_token_version
-# }
-
-
-# locals {
-#   gpu = {
-#     sources = [for s in data.oci_containerengine_node_pool_option.oci_oke_node_pool_option.sources : s if length(regexall(".*Gen2-GPU.*", s.source_name)) > 0]
-#     shapes = {
-#       BM = [for s in data.oci_containerengine_node_pool_option.oci_oke_node_pool_option.shapes : s if length(regexall("BM[.]GPU.*", s)) > 0]
-#       VM = [for s in data.oci_containerengine_node_pool_option.oci_oke_node_pool_option.shapes : s if length(regexall("VM[.]GPU.*", s)) > 0]
-#     }
-#   }
-#   arm = {
-#     sources = [for s in data.oci_containerengine_node_pool_option.oci_oke_node_pool_option.sources : s if length(regexall(".*aarch64.*", s.source_name)) > 0]
-#     shapes = {
-#       BM = [for s in data.oci_containerengine_node_pool_option.oci_oke_node_pool_option.shapes : s if length(regexall("BM[.]Standard[.]A1.*", s)) > 0]
-#       VM = [for s in data.oci_containerengine_node_pool_option.oci_oke_node_pool_option.shapes : s if length(regexall("VM[.]Standard[.]A1.*", s)) > 0]
-#     }
-#   }
-#   x86 = {
-#     sources = [for s in data.oci_containerengine_node_pool_option.oci_oke_node_pool_option.sources : s if length(regexall(".*(aarch64|Gen2-GPU).*", s.source_name)) == 0]
-#     shapes = {
-#       BM = [for s in data.oci_containerengine_node_pool_option.oci_oke_node_pool_option.shapes : s if length(regexall(".*(GPU|A1).*", s)) == 0 && length(regexall("BM.*", s)) > 0]
-#       VM = [for s in data.oci_containerengine_node_pool_option.oci_oke_node_pool_option.shapes : s if length(regexall(".*(GPU|A1).*", s)) == 0 && length(regexall("VM.*", s)) > 0]
-#     }
-#   }
-# }
-
 data "oci_limits_limit_definitions" "limit_def" {
   compartment_id = var.tenancy_ocid
   service_name   = "compute"
@@ -103,22 +73,6 @@ data "oci_core_shapes" "valid_shapes" {
   compartment_id      = var.cluster_compartment_id
   availability_domain = data.oci_identity_availability_domains.ADs.availability_domains[count.index].name
 }
-
-# output valid_shapes {
-#   value = data.oci_core_shapes.valid_shapes.*.shapes
-# }
-
-# output "shape_ad_availability" {
-#   value = local.shape_ad_availability
-# }
-
-# output "limits" {
-#   value = local.availability_map
-# }
-
-# output "limits_definitions" {
-#   value = local.limits_definitions
-# }
 
 resource "random_string" "deploy_id" {
   length      = 4

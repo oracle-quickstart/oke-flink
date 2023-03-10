@@ -38,7 +38,7 @@ resource "null_resource" "metrics_server" {
   }
 
   provisioner "local-exec" {
-    command = "helm upgrade --install metrics-server metrics-server/metrics-server -n kube-system --set replicas=3 --set podDisruptionBudget.enabled=true --set podDisruptionBudget.minAvailable=1 "
+    command = "helm upgrade --install metrics-server metrics-server/metrics-server -n kube-system --set replicas=1"
   }
 
   provisioner "local-exec" {

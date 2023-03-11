@@ -94,4 +94,13 @@ resource "oci_containerengine_node_pool" "oci_oke_node_pool" {
     }
   }
   defined_tags = local.node_pools[count.index]["tags"]
+
+  lifecycle {
+    ignore_changes = [
+      node_config_details[0].size,
+      node_config_details[1].size,
+      node_config_details[2].size
+    ]
+  }
+
 }

@@ -71,3 +71,11 @@ output "flink_ui_port_forward" {
 output "flink_ui_access" {
   value = "http://localhost:8081"
 }
+
+output "cluster_id" {
+  value = oci_containerengine_cluster.oci_oke_cluster.id
+}
+
+output "cluster_name" {
+  value = "${var.cluster_name}-${random_string.deploy_id.result}"
+}

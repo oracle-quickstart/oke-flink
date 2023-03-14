@@ -38,9 +38,12 @@ variableGroups:
       - services_cidr
       - cluster_options_add_ons_is_kubernetes_dashboard_enabled
       - cluster_options_add_ons_is_tiller_enabled
-      - node_pool_count
       - add_cluster_tag
       - cluster_tags
+
+  - title: Number of Node Pools
+    variables:
+      - node_pool_count
 
   - title: Node SSH Access
     variables:
@@ -307,7 +310,7 @@ variables:
 
   node_pool_count:
     type: integer
-    minimum: 0
+    minimum: 1
     maximum: 3
     default: 1
     title: Number of Node Pools

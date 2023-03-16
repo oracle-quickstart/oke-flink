@@ -30,6 +30,7 @@ resource "helm_release" "cert_manager" {
   }
   depends_on = [
     data.oci_containerengine_cluster_kube_config.oke,
-    oci_containerengine_cluster.oci_oke_cluster
+    oci_containerengine_cluster.oci_oke_cluster,
+    oci_containerengine_node_pool.oci_oke_node_pool,
   ]
 }

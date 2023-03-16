@@ -17,7 +17,7 @@ locals {
   k8s_minor_version                                   = regex("^\\d+", replace(local.kubernetes_version, "v1.", ""))
 }
 
-resource "kubernetes_service_account" "cluster_autoscaler_sa" {
+resource "kubernetes_service_account_v1" "cluster_autoscaler_sa" {
   count = local.cluster_autoscaler_enabled ? 1 : 0
 
   metadata {
@@ -48,7 +48,7 @@ resource "kubernetes_secret" "cluster_autoscaler_sa_token" {
   type = "kubernetes.io/service-account-token"
 
   depends_on = [
-    kubernetes_service_account.cluster_autoscaler_sa,
+    kubernetes_service_account_v1.cluster_autoscaler_sa,
   oci_containerengine_node_pool.oci_oke_node_pool]
 }
 
@@ -304,6 +304,14 @@ resource "kubernetes_deployment" "cluster_autoscaler_deployment" {
     oci_containerengine_node_pool.oci_oke_node_pool,
     helm_release.metrics_server
   ]
+
+  lifecycle {
+    ignore_changes = [
+      spec[0].template[0].spec[0].container[0].env
+    ]
+  }
+
+
 }
 
 resource "kubernetes_pod_disruption_budget_v1" "core_dns_pod_disruption_budget" {

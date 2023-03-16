@@ -15,8 +15,8 @@ resource "helm_release" "metrics_server" {
   wait       = false
 
   set {
-    name  = "replicas"
-    value = "3"
+    name  = "addonResizer.enabled"
+    value = "true"
   }
   depends_on = [
     data.oci_containerengine_cluster_kube_config.oke,

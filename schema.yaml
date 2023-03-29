@@ -161,6 +161,7 @@ variableGroups:
       - enable_flink
       - enable_cert_manager
       - enable_metrics_server
+      - enable_monitoring_stack
 
 variables:
 
@@ -1069,13 +1070,21 @@ variables:
     description: |
       Apache Flink will be installed using the Flink Operator.
 
+  enable_monitoring_stack:
+    type: boolean
+    default: true
+    title: Deploy Monitoring Stack
+    description: |
+      Deploys Prometheus, Grafana and related datasources, plugins and dashboards.
+
 outputGroups:
-  - title: Access Command
+  - title: Access
     outputs: 
       - access_command
       - flink_demo_job
       - flink_ui_port_forward
       - flink_ui_access
+      - grafana_password
 
 outputs:
   access_command:
@@ -1101,3 +1110,9 @@ outputs:
     title: Flink UI
     displayText: "Access the Flink UI"
     visible: true
+
+  grafana_password:
+    type: copyableString
+    title: Grafana access
+    displayText: "Grafana password for 'admin' user"
+    visible: 

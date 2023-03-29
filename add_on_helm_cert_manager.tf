@@ -4,9 +4,9 @@
 ## https://github.com/jetstack/cert-manager/blob/master/README.md
 ## https://artifacthub.io/packages/helm/cert-manager/cert-manager
 
-locals {
-  enable_cert_manager = var.enable_flink ? true : var.enable_cert_manager
-}
+# locals {
+#   enable_cert_manager = var.enable_flink ? true : var.enable_cert_manager
+# }
 
 resource "helm_release" "cert_manager" {
   count            = local.enable_cert_manager ? 1 : 0

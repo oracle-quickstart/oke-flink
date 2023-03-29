@@ -1,0 +1,6 @@
+- oci-logs-datasource
+- oci-metrics-datasource
+- grafana-kubernetes-app
+- grafana-worldmap-panel
+- grafana-piechart-panel
+- btplc-status-dot-panel

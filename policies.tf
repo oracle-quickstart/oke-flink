@@ -18,7 +18,7 @@ locals {
 }
 
 resource "oci_identity_network_source" "node_pool_network_source" {
-  provider       = oci.home_region
+  provider = oci.home_region
   #Required
   compartment_id = var.tenancy_ocid
   description    = "NSG for ${local.nsg_name} autoscaler"

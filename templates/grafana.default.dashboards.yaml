@@ -1,0 +1,44 @@
+k8s-cluster:
+  gnetId: 7249
+  revision: 1
+  datasource: Prometheus
+k8s-cluster-metrics:
+  gnetId: 11663
+  revision: 1
+  datasource: Prometheus
+k8s-cluster-metrics-simple: 
+  gnetId: 6417
+  revision: 1
+  datasource: Prometheus
+k8s-pods-monitoring: 
+  gnetId: 13498
+  revision: 1
+  datasource: Prometheus
+k8s-memory: 
+  gnetId: 13421
+  revision: 1
+  datasource: Prometheus
+k8s-networking: 
+  gnetId: 12658
+  revision: 1
+  datasource: Prometheus
+k8s-cluster-autoscaler:
+  gnetId: 3831
+  revision: 1
+  datasource: Prometheus
+k8s-hpa:
+  gnetId: 10257
+  revision: 1
+  datasource: Prometheus
+k8s-pods:
+  gnetId: 6336
+  revision: 1
+  datasource: Prometheus
+oci-compute:
+  gnetId: 13596
+  revision: 1
+  datasource: Oracle Cloud Infrastructure Metrics
+oci-oke:
+  gnetId: 13594
+  revision: 1
+  datasource: Oracle Cloud Infrastructure Metrics

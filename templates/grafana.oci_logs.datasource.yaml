@@ -1,0 +1,9 @@
+name: Oracle Cloud Infrastructure Logs
+type: oci-logs-datasource
+access: proxy
+disableDeletion: true
+editable: true
+jsonData:
+  tenancyOCID: ${tenancy_ocid}
+  defaultRegion: ${region}
+  environment: "OCI Instance"

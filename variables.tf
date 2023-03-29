@@ -273,3 +273,8 @@ variable "enable_cert_manager" {
 variable "enable_flink" {
   default = true
 }
+
+
+variable "enable_monitoring_stack" {
+  default = true
+}

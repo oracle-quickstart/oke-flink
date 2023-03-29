@@ -1,4 +1,4 @@
-## Copyright © 2022, Oracle and/or its affiliates. 
+## Copyright © 2022-2023, Oracle and/or its affiliates. 
 ## All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
 
 data "oci_containerengine_cluster_option" "cluster_options" {
@@ -12,8 +12,7 @@ data "oci_containerengine_node_pool_option" "oci_oke_node_pool_option" {
 # Gets home and current regions
 data "oci_identity_tenancy" "tenant_details" {
   tenancy_id = var.tenancy_ocid
-
-  provider = oci.current_region
+  provider   = oci.current_region
 }
 
 data "oci_identity_regions" "home_region" {
@@ -49,6 +48,7 @@ data "oci_limits_limit_definitions" "limit_def" {
   service_name   = "compute"
 }
 
+# buidl maps of valid shapes for each AD
 locals {
   availability_map = [for def in data.oci_limits_limit_definitions.limit_def.limit_definitions : def if contains(compact([var.np1_node_shape, var.np2_node_shape, var.np3_node_shape]), def.description)]
   limits_definitions = [
@@ -75,6 +75,7 @@ data "oci_core_shapes" "valid_shapes" {
   availability_domain = data.oci_identity_availability_domains.ADs.availability_domains[count.index].name
 }
 
+# Deploy ID to uniquely identify this cluster and associated resources.
 resource "random_string" "deploy_id" {
   length      = 4
   special     = false

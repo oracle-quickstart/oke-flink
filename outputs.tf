@@ -61,7 +61,7 @@ output "access_command" {
 }
 
 output "flink_demo_job" {
-  value = "kubectl create -f https://raw.githubusercontent.com/apache/flink-kubernetes-operator/release-1.2/examples/basic.yaml"
+  value = "kubectl create -f https://raw.githubusercontent.com/apache/flink-kubernetes-operator/release-1.3/examples/basic.yaml"
 }
 
 output "flink_ui_port_forward" {

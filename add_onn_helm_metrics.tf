@@ -1,9 +1,9 @@
 ## Copyright © 2022-2023, Oracle and/or its affiliates. 
 ## All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
 
-locals {
-  enable_metrics_server = var.np1_enable_autoscaler || var.np2_enable_autoscaler || var.np3_enable_autoscaler ? true : var.enable_metrics_server
-}
+# locals {
+#   enable_metrics_server = var.np1_enable_autoscaler || var.np2_enable_autoscaler || var.np3_enable_autoscaler ? true : var.enable_metrics_server
+# }
 
 resource "helm_release" "metrics_server" {
   count      = local.enable_metrics_server ? 1 : 0

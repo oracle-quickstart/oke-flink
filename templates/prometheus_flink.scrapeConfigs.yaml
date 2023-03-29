@@ -1,0 +1,26 @@
+- job_name: 'flink'
+  scheme: http
+  scrape_interval: 3s
+  kubernetes_sd_configs:
+  - role: pod
+    namespaces:
+      names:
+      - flink
+  relabel_configs:
+  - source_labels: [__meta_kubernetes_pod_label_component]
+    action: keep
+    regex: '(job|task)manager'
+  - source_labels: [__meta_kubernetes_pod_ip]
+    action: replace
+    target_label: __address__
+    regex: '([^:]+)(?::\d+)?'
+    replacement: $1:9249
+  metric_relabel_configs:
+  - source_labels: [tm_id]
+    regex: '(.*)_taskmanager(.*)'
+    replacement: '${1}'
+    target_label: cluster_name
+  - source_labels: [tm_id]
+    regex: '(.*)_taskmanager(.*)'
+    replacement: 'tm${2}'
+    target_label: task_manager_id

@@ -15,6 +15,7 @@ data "oci_core_image" "np3_image" {
   image_id = var.np3_image_id
 }
 
+# Identify if an OKE specific image is available for the Compute image selected
 locals {
   k8s_version = replace(local.kubernetes_version, "v", "")
   np1_oke_image = var.node_pool_count >= 1 ? [for option
@@ -30,12 +31,3 @@ locals {
   option if length(regexall("${data.oci_core_image.np3_image[0].display_name}-OKE-${local.k8s_version}", option.source_name)) > 0] : []
   np3_oke_image_id = length(local.np3_oke_image) > 0 ? local.np3_oke_image[0].image_id : var.np3_image_id
 }
-
-# output "images" {
-#   value = {
-#     k8s_version   = local.k8s_version
-#     np1_oke_image = local.np1_oke_image
-#     np2_oke_image = local.np2_oke_image
-#     np3_oke_image = local.np3_oke_image
-#   }
-# }

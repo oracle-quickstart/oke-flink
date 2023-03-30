@@ -3,13 +3,13 @@
   scrape_interval: 3s
   kubernetes_sd_configs:
   - role: pod
-    namespaces:
-      names:
-      - flink
   relabel_configs:
   - source_labels: [__meta_kubernetes_pod_label_component]
     action: keep
     regex: '(job|task)manager'
+  - source_labels: [__meta_kubernetes_namespace]
+    action: keep
+    regex: flink
   - source_labels: [__meta_kubernetes_pod_ip]
     action: replace
     target_label: __address__

@@ -410,6 +410,7 @@ variables:
     dependsOn: 
       compartmentId: cluster_compartment_id
     required: true
+    default: 4
     visible:
       and:
         - ge:
@@ -442,6 +443,7 @@ variables:
     dependsOn: 
       compartmentId: cluster_compartment_id
     required: true
+    default: 64
     visible:
       and:
         - ge:
@@ -502,7 +504,7 @@ variables:
     type: number
     minimum: 1
     maximum: 256
-    default: 3
+    default: 6
     title: Maximum Number of Nodes
     description: Maximum number of nodes the pool can scale to.
     required: true
@@ -700,7 +702,7 @@ variables:
     type: number
     minimum: 1
     maximum: 256
-    default: 3
+    default: 6
     title: Maximum Number of Nodes
     description: Maximum number of nodes the pool can scale to.
     required: true
@@ -890,7 +892,7 @@ variables:
     type: number
     minimum: 1
     maximum: 256
-    default: 3
+    default: 6
     title: Maximum Number of Nodes
     description: Maximum number of nodes the pool can scale to.
     required: true

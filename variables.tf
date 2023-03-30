@@ -91,11 +91,11 @@ variable "np1_node_shape" {
 }
 
 variable "np1_ocpus" {
-  default = 1
+  default = 4
 }
 
 variable "np1_memory_gb" {
-  default = 4
+  default = 64
 }
 
 variable "np1_image_id" {
@@ -147,11 +147,11 @@ variable "np2_node_shape" {
 }
 
 variable "np2_ocpus" {
-  default = 1
+  default = 4
 }
 
 variable "np2_memory_gb" {
-  default = 4
+  default = 64
 }
 
 variable "np2_image_id" {
@@ -203,11 +203,11 @@ variable "np3_node_shape" {
 }
 
 variable "np3_ocpus" {
-  default = 1
+  default = 4
 }
 
 variable "np3_memory_gb" {
-  default = 4
+  default = 64
 }
 
 variable "np3_image_id" {

@@ -1,6 +1,6 @@
 # oke-flink
 
-Deploy Flink Operator on a Kubernetes cluster on Oracle Cloud Infrastructure.
+Deploy a Kubernetes cluster on Oracle Cloud Infrastructure with multiple node pools and add-ons like Apache Flink.
 
 [![Deploy to Oracle Cloud][magic_button]][magic_oke_flink_stack]
 
@@ -15,7 +15,8 @@ The OKE cluster template features the following:
 - Option to use Secrets encryption.
 - Option to enable Image Validation and Pod Admission Controllers.
 - Option to install metrics server (required by cluster auto-scaler)
-- Opton to install cert-manager (required by Flink Operator)
+- Option to install cert-manager (required by Flink Operator)
+- Option to install a monitoring stack based on Prometheus and Grafana
 
 ## Getting started with Apache Flink Operator
 
@@ -64,6 +65,8 @@ spec:
     # high-availability.storageDir: s3://<state_storage_bucket>/ha
     rest.flamegraph.enabled: "true"
     restart-strategy: exponential-delay
+    metrics.reporters: prom
+    metrics.reporter.prom.factory.class: org.apache.flink.metrics.prometheus.PrometheusReporterFactory
   serviceAccount: flink
   podTemplate:
     apiVersion: v1
@@ -128,6 +131,19 @@ spec:
     ## Command line arguments to pass to the job
     args: []
     upgradeMode: stateless # Use savepoint if state management is configuered. `last-state` is not supported.
+```
+
+## Send Flink metrics to Prometheus
+
+To send Flink metrics to Prometheus, some specific configuration is needed in the Flink deployment.
+
+Make sure to add the following to you Flink Session or Application deployment:
+
+```yaml
+spec:
+  flinkConfiguration:
+    metrics.reporters: prom
+    metrics.reporter.prom.factory.class: org.apache.flink.metrics.prometheus.PrometheusReporterFactory
 ```
 
 ## Use the Terraform template

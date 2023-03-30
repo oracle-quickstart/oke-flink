@@ -10,10 +10,6 @@ locals {
   grafana_plugins     = file("${path.module}/templates/grafana.plugins.yaml")
 }
 
-output dash {
-  value = local.grafana_dashboards
-}
-
 resource "random_password" "grafana_password" {
   count            = local.enable_monitoring_stack ? 1 : 0
   length           = 20

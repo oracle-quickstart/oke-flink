@@ -7,10 +7,10 @@ locals {
   cluster_autoscaler_image_version                    = lookup(local.cluster_autoscaler_supported_k8s_versions, local.k8s_major_minor_version, reverse(values(local.cluster_autoscaler_supported_k8s_versions))[0])
   cluster_autoscaler_image                            = "iad.ocir.io/oracle/oci-cluster-autoscaler:${local.cluster_autoscaler_image_version}"
   cluster_autoscaler_log_level_verbosity              = 4
-  cluster_autoscaler_max_node_provision_time          = "25m"
-  cluster_autoscaler_scale_down_delay_after_add       = "10m"
-  cluster_autoscaler_scale_down_unneeded_time         = "10m"
-  cluster_autoscaler_unremovable_node_recheck_timeout = "5m"
+  cluster_autoscaler_max_node_provision_time          = "${var.cluster_autoscaler_max_node_provision_time}m"
+  cluster_autoscaler_scale_down_delay_after_add       = "${var.cluster_autoscaler_scale_down_delay_after_add}m"
+  cluster_autoscaler_scale_down_unneeded_time         = "${var.cluster_autoscaler_scale_down_unneeded_time}m"
+  cluster_autoscaler_unremovable_node_recheck_timeout = "${var.cluster_autoscaler_unremovable_node_recheck_timeout}m"
   cluster_autoscaler_cloud_provider                   = tonumber(local.k8s_minor_version) <= 23 ? "oci" : "oci-oke"
   cluster_autoscaler_enabled                          = contains(keys(local.cluster_autoscaler_supported_k8s_versions), local.k8s_major_minor_version) ? (var.np1_enable_autoscaler || var.np2_enable_autoscaler || var.np3_enable_autoscaler) : false
   k8s_major_minor_version                             = regex("\\d+(?:\\.(?:\\d+|x)(?:))", local.kubernetes_version)
@@ -273,9 +273,9 @@ resource "kubernetes_deployment" "cluster_autoscaler_deployment" {
             "--stderrthreshold=info",
             "--cloud-provider=${local.cluster_autoscaler_cloud_provider}",
             "--max-node-provision-time=${local.cluster_autoscaler_max_node_provision_time}",
-            "--nodes=${var.np1_autoscaler_min_nodes}:${var.np1_autoscaler_max_nodes}:${oci_containerengine_node_pool.oci_oke_node_pool[0].id}",
-            var.node_pool_count >= 2 ? "--nodes=${var.np2_autoscaler_min_nodes}:${var.np2_autoscaler_max_nodes}:${oci_containerengine_node_pool.oci_oke_node_pool[1].id}" : "",
-            var.node_pool_count >= 3 ? "--nodes=${var.np3_autoscaler_min_nodes}:${var.np3_autoscaler_max_nodes}:${oci_containerengine_node_pool.oci_oke_node_pool[2].id}" : "",
+            var.np1_enable_autoscaler ? "--nodes=${var.np1_autoscaler_min_nodes}:${var.np1_autoscaler_max_nodes}:${oci_containerengine_node_pool.oci_oke_node_pool[0].id}" : "",
+            var.node_pool_count >= 2 && var.np2_enable_autoscaler ? "--nodes=${var.np2_autoscaler_min_nodes}:${var.np2_autoscaler_max_nodes}:${oci_containerengine_node_pool.oci_oke_node_pool[1].id}" : "",
+            var.node_pool_count >= 3 && var.np3_enable_autoscaler ? "--nodes=${var.np3_autoscaler_min_nodes}:${var.np3_autoscaler_max_nodes}:${oci_containerengine_node_pool.oci_oke_node_pool[2].id}" : "",
             "--scale-down-delay-after-add=${local.cluster_autoscaler_scale_down_delay_after_add}",
             "--scale-down-unneeded-time=${local.cluster_autoscaler_scale_down_unneeded_time}",
             "--unremovable-node-recheck-timeout=${local.cluster_autoscaler_unremovable_node_recheck_timeout}",
@@ -329,6 +329,31 @@ resource "kubernetes_pod_disruption_budget_v1" "core_dns_pod_disruption_budget" 
     selector {
       match_labels = {
         k8s-app = "kube-dns"
+      }
+    }
+  }
+
+  depends_on = [
+    data.oci_containerengine_cluster_kube_config.oke,
+    oci_containerengine_node_pool.oci_oke_node_pool
+  ]
+}
+
+resource "kubernetes_pod_disruption_budget_v1" "cluster_autoscaler_pod_disruption_budget" {
+  count = local.cluster_autoscaler_enabled ? 1 : 0
+
+  metadata {
+    name      = "cluster-autoscaler-pdb"
+    namespace = "kube-system"
+    labels = {
+      k8s-app = "cluster-autoscaler"
+    }
+  }
+  spec {
+    max_unavailable = "1"
+    selector {
+      match_labels = {
+        app = "cluster-autoscaler"
       }
     }
   }

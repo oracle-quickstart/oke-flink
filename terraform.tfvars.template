@@ -2,11 +2,11 @@
 ## All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
 
 region       = "us-ashburn-1"
-tenancy_ocid = "ocid1.tenancy.oc1..."
+tenancy_ocid = "ocid1.tenancy.oc1.."
 
 ## Compartments
-vcn_compartment_id     = "ocid1.compartment.oc1..."
-cluster_compartment_id = "ocid1.compartment.oc1..."
+vcn_compartment_id     = "ocid1.compartment.oc1.."
+cluster_compartment_id = "ocid1.compartment.oc1.."
 
 ## Network
 use_existing_vcn = false
@@ -17,7 +17,7 @@ is_endpoint_public = true
 
 ## Cluster
 cluster_name = "Flink Cluster"
-# kubernetes_version=
+kubernetes_version=""
 ssh_public_key  = "ssh-rsa AAAA..."
 node_pool_count = 1
 # add_cluster_tag=
@@ -76,3 +76,4 @@ image_validation_key_id = null # "ocid1.key.oc1..."
 enable_cert_manager = true
 enable_flink = true
 enable_metrics_server = true
+enable_monitoring_stack = true

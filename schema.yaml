@@ -156,6 +156,18 @@ variableGroups:
     variables:
       - enable_pod_admission_controller
 
+  - title: "Cluster Autoscaler Settings"
+    variables:
+      - cluster_autoscaler_max_node_provision_time
+      - cluster_autoscaler_scale_down_delay_after_add
+      - cluster_autoscaler_scale_down_unneeded_time
+      - cluster_autoscaler_unremovable_node_recheck_timeout
+    visible:
+      or: 
+      - np1_enable_autoscaler
+      - np2_enable_autoscaler
+      - np3
+
   - title: "Deployments"
     variables:
       - enable_flink
@@ -1079,6 +1091,22 @@ variables:
     description: |
       Deploys Prometheus, Grafana and related datasources, plugins and dashboards.
 
+  cluster_autoscaler_max_node_provision_time:
+    type: number
+    title: Max node provisioning time before it is considered failed.
+
+  cluster_autoscaler_scale_down_delay_after_add:
+    type: number
+    title: Wait time before scaling a node down after it was added.
+
+  cluster_autoscaler_scale_down_unneeded_time:
+    type: number
+    title: Wait time before scaling a node down after it is unneeded.
+
+  cluster_autoscaler_unremovable_node_recheck_timeout:
+    type: number
+    title: Wait time between checks on unremovable nodes.
+
 outputGroups:
   - title: Access
     outputs: 
@@ -1117,4 +1145,4 @@ outputs:
     type: copyableString
     title: Grafana access
     displayText: "Grafana password for 'admin' user"
-    visible: 
+    visible: enable_monitoring_stack

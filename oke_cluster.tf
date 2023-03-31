@@ -2,7 +2,7 @@
 ## All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
 
 locals {
-  kubernetes_version = var.kubernetes_version != "" ? var.kubernetes_version : reverse(data.oci_containerengine_cluster_option.cluster_options.kubernetes_versions)[0]
+  kubernetes_version = (var.kubernetes_version != "" && var.kubernetes_version != null) ? var.kubernetes_version : reverse(data.oci_containerengine_cluster_option.cluster_options.kubernetes_versions)[0]
 }
 
 resource "oci_containerengine_cluster" "oci_oke_cluster" {

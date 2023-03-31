@@ -20,8 +20,11 @@ apiVersion: flink.apache.org/v1beta1
 kind: FlinkDeployment
 metadata:
   name: basic-example
+  namespace: flink
+  labels:
+    app: flink
 spec:
-  image: flink:1.15
+  image: sjc.ocir.io/bigdatadatasciencelarge/testing/flink:1.15
   flinkVersion: v1_15
   flinkConfiguration:
     taskmanager.numberOfTaskSlots: "2"
@@ -30,12 +33,12 @@ spec:
   serviceAccount: flink
   jobManager:
     resource:
-      memory: "2048m"
-      cpu: 1
+      memory: "1024m"
+      cpu: 0.2
   taskManager:
     resource:
       memory: "2048m"
-      cpu: 1
+      cpu: 0.2
   job:
     jarURI: local:///opt/flink/examples/streaming/StateMachineExample.jar
     parallelism: 2

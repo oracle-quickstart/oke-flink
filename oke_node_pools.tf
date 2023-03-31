@@ -57,8 +57,8 @@ resource "oci_containerengine_node_pool" "oci_oke_node_pool" {
 
   cluster_id         = oci_containerengine_cluster.oci_oke_cluster.id
   compartment_id     = var.cluster_compartment_id
-  kubernetes_version = var.kubernetes_version != "" ? var.kubernetes_version : reverse(data.oci_containerengine_cluster_option.cluster_options.kubernetes_versions)[0]
-  name               = "${local.node_pools[count.index]["node_shape"]}_Node_Pool"
+  kubernetes_version = (var.kubernetes_version != "" && var.kubernetes_version != null) ? var.kubernetes_version : reverse(data.oci_containerengine_cluster_option.cluster_options.kubernetes_versions)[0]
+  name               = "${replace(local.node_pools[count.index]["node_shape"], "Standard", "Std")}${length(regexall("Flex", local.node_pools[count.index]["node_shape"])) > 0 ? "-${local.node_pools[count.index]["ocpus"]}-${local.node_pools[count.index]["memory_gb"]}GB" : ""}"
   node_shape         = local.node_pools[count.index]["node_shape"]
 
   #   initial_node_labels {

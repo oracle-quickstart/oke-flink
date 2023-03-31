@@ -1,0 +1,36 @@
+name: tests
+on: 
+  schedule:
+  - cron:  '0 7 * * 1'    # Mondays at 7AM
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    name: tests
+
+    env:
+      OCI_KEY: ${{ secrets.OCI_KEY }}
+      OCI_CONFIG: ${{ secrets.OCI_CONFIG }}
+      TENANCY_OCID: ${{ secrets.TENANCY_OCID }}
+      COMPARTMENT_OCID: ${{ secrets.COMPARTMENT_OCID }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run tests
+        run: |
+          # Install OCI CLI
+          wget https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+          chmod +x ./install.sh
+          bash -c "./install.sh --accept-all-defaults"
+          mkdir -p ~/.oci
+          echo "$OCI_KEY" > ~/.oci/oci_ci_user.pem
+          echo "$OCI_CONFIG" > ~/.oci/config 
+          # install terraform and kubectl
+          #   curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+          # sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+          sudo apt-get update
+          sudo apt-get install -y terraform=1.2.9 kubectl=1.24.12
+          # sudo apt-get update && sudo apt-get install -y gnupg software-properties-common
+          # wget -O- https://apt.releases.hashicorp.com/gpg | \
+          #   gpg --dearmor | \
+          #   sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
+
+          ./tests/tests.sh

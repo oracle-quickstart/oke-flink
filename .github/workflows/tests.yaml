@@ -1,7 +1,11 @@
+## Copyright © 2022-2023, Oracle and/or its affiliates. 
+## All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
+
 name: tests
 on: 
+  # workflow_dispatch
   schedule:
-  - cron:  '0 7 * * 1'    # Mondays at 7AM
+  - cron:  '0 15 * * 7'    # Sundays at 8AM PST
 jobs:
   tests:
     runs-on: ubuntu-latest
@@ -14,23 +18,43 @@ jobs:
       COMPARTMENT_OCID: ${{ secrets.COMPARTMENT_OCID }}
     steps:
       - uses: actions/checkout@v3
-      - name: Run tests
+      - name: Install OCI CLI
         run: |
-          # Install OCI CLI
           wget https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
           chmod +x ./install.sh
-          bash -c "./install.sh --accept-all-defaults"
+          ./install.sh --accept-all-defaults
           mkdir -p ~/.oci
           echo "$OCI_KEY" > ~/.oci/oci_ci_user.pem
           echo "$OCI_CONFIG" > ~/.oci/config 
-          # install terraform and kubectl
+          echo "~/bin" >> $GITHUB_PATH
+          export PATH=$PATH:/home/runner/bin
+          oci setup repair-file-permissions --file /home/runner/.oci/config 
+          oci setup repair-file-permissions --file /home/runner/.oci/oci_ci_user.pem 
+      - name: Check Deps
+        run: |
+          # sudo apt list -a kubectl
           #   curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
           # sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-          sudo apt-get update
-          sudo apt-get install -y terraform=1.2.9 kubectl=1.24.12
           # sudo apt-get update && sudo apt-get install -y gnupg software-properties-common
           # wget -O- https://apt.releases.hashicorp.com/gpg | \
           #   gpg --dearmor | \
           #   sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
+          # sudo apt-get install -y terraform=1.2.9 kubectl=1.24.12
 
+          # install terraform and kubectl
+          # sudo apt-get update
+          kubectl version --client=true
+          terraform version
+
+      - name: Run tests
+        run: |
+          pwd
+          export PATH=$PATH:/home/runner/bin
           ./tests/tests.sh
+      - name: Cleanup
+        if: always()
+        run: |
+          rm -rf ~/.oci
+          rm -f test.tfvars
+          rm -rf ./.terraform
+          rm -f terraform.tfstate*

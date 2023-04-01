@@ -1,3 +1,6 @@
+## Copyright © 2022-2023, Oracle and/or its affiliates. 
+## All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
+
 region       = "us-sanjose-1"
 tenancy_ocid = "ocid1.tenancy.oc1.."
 

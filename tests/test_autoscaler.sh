@@ -1,3 +1,6 @@
+## Copyright © 2022-2023, Oracle and/or its affiliates. 
+## All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
+
 #!/bin/bash
 set -e
 
@@ -50,21 +53,21 @@ log INFO "cluster-autoscaler leader is pod ${AUTOSCALER_LEADER}. Tailing the log
 # Tail the log until we find the scaling down mention (tail in subshell so the command exits when grep finds the line)
 log INFO "Waiting for the nodepool to scale down..."
 set +e
-(kubectl logs --since=5s ${AUTOSCALER_LEADER} -n kube-system &) | grep -p "Scale-down: removing empty node"
+(kubectl logs --since=5s ${AUTOSCALER_LEADER} -n kube-system &) | grep "Scale-down: removing empty node"
 
 log INFO "Node is being removed..."
-(kubectl logs --since=5s ${AUTOSCALER_LEADER} -n kube-system &) | grep -p "Successfully added ignore-taint.cluster-autoscaler.kubernetes.io/oke-impending-node-termination"
+(kubectl logs --since=5s ${AUTOSCALER_LEADER} -n kube-system &) | grep "Successfully added ignore-taint.cluster-autoscaler.kubernetes.io/oke-impending-node-termination"
 
-(kubectl logs --since=5s ${AUTOSCALER_LEADER} -n kube-system &) | grep -p "1 unregistered nodes present"
+(kubectl logs --since=5s ${AUTOSCALER_LEADER} -n kube-system &) | grep "1 unregistered nodes present"
 log INFO "Waiting for the node to be removed..."
 set -e
 
 COUNTER=12
-NB_NODES=$(kubectl get nodes --no-headers | grep -p " Ready " | wc -l | tr -d " ")
+NB_NODES=$(kubectl get nodes --no-headers | grep " Ready " | wc -l | tr -d " ")
 while [[ $NB_NODES -gt $CURRENT_NB_NODES && $COUNTER -gt 0 ]]; do
     log INFO "Number of nodes is $NB_NODES, expecting $CURRENT_NB_NODES"
     sleep 20
-    NB_NODES=$(kubectl get nodes --no-headers | grep -p " Ready " | wc -l | tr -d " ")
+    NB_NODES=$(kubectl get nodes --no-headers | grep " Ready " | wc -l | tr -d " ")
     COUNTER=$(( $COUNTER - 1 ))
 done
 

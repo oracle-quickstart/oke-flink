@@ -1,3 +1,5 @@
+![tests](https://github.com/oracle-quickstart/oke-flink/actions/workflows/tests.yaml/badge.svg)
+
 # oke-flink
 
 Deploy a Kubernetes cluster on Oracle Cloud Infrastructure with multiple node pools and add-ons like Apache Flink.

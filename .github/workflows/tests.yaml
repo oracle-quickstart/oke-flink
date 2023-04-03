@@ -3,9 +3,7 @@
 
 name: tests
 on: 
-  # workflow_dispatch
-  schedule:
-  - cron:  '0 15 * * 7'    # Sundays at 8AM PST
+  workflow_dispatch
 jobs:
   tests:
     runs-on: ubuntu-latest

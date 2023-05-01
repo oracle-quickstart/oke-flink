@@ -6,6 +6,8 @@
 set -e
 clean_up () {
     ARG=$?
+    log INFO "Debug info..."
+    kubectl get pods -A
     log INFO "Cleaning up..."
     destroy_stack || exit 1
     exit $ARG

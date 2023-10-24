@@ -282,12 +282,13 @@ variables:
     type: enum
     title: "Kubernetes Version"
     enum: # Necessary hardcoded supported versions, as ORM does not retrieve the versions from OKE.
+    - "v1.27.2"
+    - "v1.26.7"
     - "v1.26.2"
+    - "v1.25.12"
     - "v1.25.4"
-    - "v1.24.1"
-    - "v1.23.4"
     required: true
-    default: "v1.25.4"
+    default: "v1.27.2"
     description: The Kubernetes version for the cluster.
     # dependsOn:
     #   compartmentId: cluster_compartment_id
@@ -953,9 +954,9 @@ variables:
   enable_secret_encryption:
     type: boolean
     default: false
-    title: Enable Kubernetes Secrets encryption
+    title: Use User Owned Key for Kubernetes Secrets encryption
     description: |
-      Enable the at-rest encryption of Kubernetes Secrets. 
+      Enable the at-rest encryption of Kubernetes Secrets with yor own key. 
       Note this requires tenancy administrator permissions to create a Dynamic Group for the cluster. 
       !!! This property cannot be changed without destroying and re-creating the cluster.
   

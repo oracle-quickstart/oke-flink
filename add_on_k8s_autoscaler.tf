@@ -3,7 +3,7 @@
 # 
 
 locals {
-  cluster_autoscaler_supported_k8s_versions           = { "1.23" = "1.23.0-4", "1.24" = "1.24.0-5", "1.25" = "1.25.0-6", "1.26" = "1.25.0-6" } # There's no API to get that list. Need to be updated manually
+  cluster_autoscaler_supported_k8s_versions           = { "1.23" = "1.23.0-4", "1.24" = "1.24.0-5", "1.25" = "1.25.0-6", "1.26" = "1.25.0-6", "1.27" = "1.27.2-9" } # There's no API to get that list. Need to be updated manually
   cluster_autoscaler_image_version                    = lookup(local.cluster_autoscaler_supported_k8s_versions, local.k8s_major_minor_version, reverse(values(local.cluster_autoscaler_supported_k8s_versions))[0])
   cluster_autoscaler_image                            = "iad.ocir.io/oracle/oci-cluster-autoscaler:${local.cluster_autoscaler_image_version}"
   cluster_autoscaler_log_level_verbosity              = 4
@@ -11,7 +11,7 @@ locals {
   cluster_autoscaler_scale_down_delay_after_add       = "${var.cluster_autoscaler_scale_down_delay_after_add}m"
   cluster_autoscaler_scale_down_unneeded_time         = "${var.cluster_autoscaler_scale_down_unneeded_time}m"
   cluster_autoscaler_unremovable_node_recheck_timeout = "${var.cluster_autoscaler_unremovable_node_recheck_timeout}m"
-  cluster_autoscaler_cloud_provider                   = tonumber(local.k8s_minor_version) <= 23 ? "oci" : "oci-oke"
+  cluster_autoscaler_cloud_provider                   = tonumber(local.k8s_minor_version) <= 23 || tonumber(local.k8s_minor_version) > 1.26 ? "oci" : "oci-oke"
   cluster_autoscaler_enabled                          = contains(keys(local.cluster_autoscaler_supported_k8s_versions), local.k8s_major_minor_version) ? (var.np1_enable_autoscaler || var.np2_enable_autoscaler || var.np3_enable_autoscaler) : false
   k8s_major_minor_version                             = regex("\\d+(?:\\.(?:\\d+|x)(?:))", local.kubernetes_version)
   k8s_minor_version                                   = regex("^\\d+", replace(local.kubernetes_version, "v1.", ""))

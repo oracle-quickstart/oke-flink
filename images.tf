@@ -31,3 +31,16 @@ locals {
   option if length(regexall("${data.oci_core_image.np3_image[0].display_name}-OKE-${local.k8s_version}", option.source_name)) > 0] : []
   np3_oke_image_id = length(local.np3_oke_image) > 0 ? local.np3_oke_image[0].image_id : var.np3_image_id
 }
+
+# output "k8s_version" {
+#   value = local.k8s_version
+# }
+
+# output "np1_image" {
+#   value = {
+#     node_image_name = data.oci_core_image.np1_image[0].display_name
+#     oke_image_id = local.np1_oke_image_id
+#     oke_image = local.np1_oke_image
+#     sources = data.oci_containerengine_node_pool_option.oci_oke_node_pool_option.sources
+#   }
+# }

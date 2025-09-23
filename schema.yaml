@@ -279,20 +279,20 @@ variables:
     required: true
 
   kubernetes_version:
-    type: enum
+    type: oci:kubernetes:versions:id
     title: "Kubernetes Version"
-    enum: # Necessary hardcoded supported versions, as ORM does not retrieve the versions from OKE.
-    - "v1.27.2"
-    - "v1.26.7"
-    - "v1.26.2"
-    - "v1.25.12"
-    - "v1.25.4"
+    # enum: # Necessary hardcoded supported versions, as ORM does not retrieve the versions from OKE.
+    # - "v1.27.2"
+    # - "v1.26.7"
+    # - "v1.26.2"
+    # - "v1.25.12"
+    # - "v1.25.4"
     required: true
-    default: "v1.27.2"
+    # default: "v1.33.1"
     description: The Kubernetes version for the cluster.
-    # dependsOn:
-    #   compartmentId: cluster_compartment_id
-    #   clusterOptionId: "all"
+    dependsOn:
+      compartmentId: cluster_compartment_id
+      clusterOptionId: "all"
 
   pods_cidr:
     type: string
